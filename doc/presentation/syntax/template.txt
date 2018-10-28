@@ -1,0 +1,5 @@
+template q_counter (state next)
+...
+state q2 : q_counter (q3)
+state q3 : q_counter (q4)
+state q4 : q_counter (q1)

@@ -1,0 +1,337 @@
+\documentclass[10pt, normalheadings]{scrartcl}
+
+\makeatletter
+
+\newcommand*{\@udk}{}
+\newcommand{\udk}[1]{\gdef\@udk{#1}}
+\newcommand*{\@email}{}
+\newcommand{\email}[1]{\gdef\@email{#1}}
+
+\renewcommand{\@biblabel}[1]{#1.\hfill}
+
+\renewcommand\labelitemi  {\normalfont\bfseries \textendash}
+\renewcommand\labelitemii {\textbullet}
+\renewcommand\labelitemiii{\textasteriskcentered}
+\renewcommand\labelitemiv {\textperiodcentered}
+
+\def\@maketitle{%
+	\clearpage
+	\let\footnote\thanks
+	\ifx\@extratitle\@empty \else
+	\noindent\@extratitle \next@tpage \if@twoside \null\next@tpage \fi
+	\fi
+	\ifx\@titlehead\@empty \else
+	\noindent\begin{minipage}[t]{\textwidth}
+		\@titlehead
+	\end{minipage}\par
+	\fi
+	{\normalsize \CYRU\CYRD\CYRK\ \@udk \par} %\null
+	\vskip 2em%
+	\begin{center}%
+		\ifx\@subject\@empty \else
+		{\Large \@subject \par}
+		\vskip 1.5em
+		\fi
+		{\bfseries\huge \@title \par}%
+		\vskip 1.5em%
+		{\normalsize
+			\lineskip .5em%
+			\begin{tabular}[t]{c}%
+				\@author \\
+				\@publishers \\
+				\@email
+			\end{tabular}\par}%
+		\vskip 1em%
+		%{\Large \@date \par}%
+		%\vskip \z@ \@plus 1em
+		%{\Large \@publishers \par}
+		\ifx\@dedication\@empty \else
+		\vskip 2em
+		{\Large \@dedication \par}
+		\fi
+	\end{center}%
+	\par
+	\vskip 2em}
+
+\makeatother
+
+\usepackage[
+a4paper, mag=1000,
+left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm, headsep=0.7cm, footskip=1cm
+]{geometry}
+\usepackage[X2, T2A]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage[english,russian]{babel}
+% Многостраничные таблицы
+\usepackage{tabularx,longtable}
+\ifpdf\usepackage{epstopdf}\fi
+
+% Шрифт Times по умолчанию
+\usepackage{pscyr}
+\renewcommand{\rmdefault}{ftm}
+
+% Красная строка
+\usepackage{indentfirst}
+
+% Вложенные рисунки
+\usepackage{subcaption}
+
+% Списки
+\usepackage{enumitem}
+\setlist{nolistsep,noitemsep}
+
+% Плавающие рисунки "в оборку".
+\usepackage{wrapfig}
+
+% Пакет для вывода текста в несколько колонок
+\usepackage{multicol}
+
+%\usepackage{natbib}
+%\setlength{\bibsep}{0pt plus 0.3ex}
+
+\let\OLDthebibliography\thebibliography
+\renewcommand\thebibliography[1]{
+	\OLDthebibliography{#1}
+	\setlength{\parskip}{0pt}
+	\setlength{\itemsep}{0pt plus 0.3ex}
+}
+
+\setlength{\parindent}{1.25cm}
+
+% Пакет для листингов прогармм
+\usepackage{minted}
+\setminted{fontsize=\small, breaklines, autogobble, baselinestretch=1.1, tabsize=4, outencoding=utf8}
+
+% Библитека для рисования фигур
+\usepackage{tikz}
+
+%opening
+\title{Компилируемый язык описания программ для эмулятора машины Тьюринга}
+\author{Л.О. Воробьев}
+\publishers{Донецкий национальный технический университет}
+\udk{004.4'422}
+\email{lev4411@gmail.com}
+
+% УДК 004.051 (Эффективность)
+% УДК 004.021 (Алгоритмы)
+% УДК 004.4'422 (Компиляторы) ++
+% УДК 004.432.42 (Функциональные языки)
+
+\pagestyle{empty}
+
+\begin{document}
+
+\maketitle
+
+%\pagestyle{empty} % нумерация выкл.
+% Формат
+\renewcommand*\captionformat {~---\ }
+\renewcommand\figurename{Рисунок}
+\renewcommand\tablename{Таблица}
+\renewcommand\refname{Литература}
+\renewcommand*\sectfont{\sffamily\bfseries\itshape}
+
+\clubpenalty=10000
+\widowpenalty=10000
+
+\begin{abstract}\itshape \noindent
+\textbf{Воробьев Л.О., Компилируемый язык описания программ для эмулятора машины Тьюринга.}
+В статье рассматривается язык программирования для описания алгоритмов на машине Тьюринга. Проанализированы существующие способы записи программы для машины Тьюринга.
+Описывается синтаксис разработанного языка описания программ и обоснована эффективность его применения в разработке программного обеспечения.
+\\ \\
+\textbf{Ключевые слова:} синтаксический анализ, компиляция, эмулятор, машина Тьюринга, форма Бэкуса-Наура
+\end{abstract}
+
+\vskip 1em%
+
+%\begin{multicols}{2}
+	
+\section*{Введение}
+
+Цель работы: создание специализированного компилируемого языка описания программ для многоленточных и одноленточных машин Тьюринга, последующая разработка и реализация компилятора для созданного языка и написание эффективных алгоритмов интерпретации скомпилированных программ.
+
+Машина Тьюринга --- абстрактная модель вычислительной машины, состоящая из бесконечной ленты и головки, которая двигается вдоль ленты, считывает и записывает содержимое ячеек, и может принимать различные состояния \cite[с.~83]{Guts_Mathem_Logic}. В общем случае, существуют также многоленточные машины Тьюринга (в англоязычной литературе --- multitape Turing machines \cite[с.~126]{Rodger_JFLAP}), которые состоят из более чем одной ленты, перемещающихся независимо друг от друга.
+
+Программой для машины Тьюринга называется конечный набор команд \cite[c.~84]{Guts_Mathem_Logic}, математическая запись которых имеет вид:
+\begin{equation}\label{eq:command}
+q_s a_i \rightarrow q_t a_j d
+\end{equation}
+где $q_s$, $q_t$ --- номера состояний; $a_i$, $a_j$ --- содержимое ячейки; $d$ --- направление движения ленты.
+
+Команда, записанная в формуле (\ref{eq:command}), означает, что если головка машины Тьюринга находится в состоянии $q_s$, а на ленте записан символ $a_i$, то головка меняет свое состояние на $q_t$, на ленту записывается символ $a_j$, и лента перемещается в направлении $d$.
+
+Программы для многоленточных машин Тьюринга содержат команды, которые имеют вид:
+\begin{equation}\label{eq:command_2}
+q_s \left( a_{i1},\,a_{i2},\,\ldots a_{in} \right) \rightarrow q_t \left( a_{j1},\,a_{j2},\,\ldots a_{jn} \right) d
+\end{equation}
+где: $a_{ik}$, $a_{jk}$ --- содержимое ячеек на ленте под номером $k$; $n$ --- количество лент.
+
+Машины Тьюринга используется во множестве теоретических и практических исследованиях. К примеру, в статье \cite{Chernuchko_Crypto} описано использование машины Тьюринга для реализации алгоритмов симметричного шифрования.
+
+Предлагаемая программная система может использоваться, как средство эмуляции многоленточных и одноленточных машин Тьюринга путем написания программ на специализированном языке программирования. Разработанный эмулятор машины Тьюринга имеет открытый API-интерфейс для языков C и C++, что позволяет использовать созданный язык программирования в разработке прикладного программного обеспечения.
+
+Использование нового компилируемого языка программирования позволит ускорить работу программного обеспечения, использующего механизм машины Тьюринга.
+
+\section*{Анализ существующих решений}
+
+Программная система, которая выполняет команды вида (\ref{eq:command}) и (\ref{eq:command_2}) называется эмулятором машины Тьюринга. Математической моделью такой системы можно считать универсальную машину Тьюринга \cite[с.~87]{Guts_Mathem_Logic}.
+
+На сегодняшний день существует большое количество эмуляторов машины Тьюринга, которые используют различный синтаксис текстовых файлов для представления программ.
+
+Программа \cite{Polyakov_Turing}, написанная на языке Паскаль, имитирует работу одноленточной машины Тьюринга. При этом программы для эмуляции задаются в виде таблицы переходов, каждая клетка которой состоит из трех частей:
+\begin{enumerate}
+	\item символ из заданного алфавита или знак "\_" для обозначения «пустого» символа;
+	\item направление перемещения: > (вправо), < (влево) или . (на месте);
+	\item новое состояние автомата \cite{Polyakov_Turing}.
+\end{enumerate}
+
+Существует онлайн-сервис \cite{Online_Turing}, предоставляющий возможность выполнения программ для одноленточной машины Тьюринга. Программа задается списком команд, наиболее близких к математической записи вида (\ref{eq:command}) и (\ref{eq:command_2}).
+
+Программа JFLAP позволяет имитировать работу однолетночной и многоленточной машины Тьюринга \cite[с.~126]{Rodger_JFLAP}. При ближайшем рассмотрении можно заметить, что программы для машины Тьюринга задаются в виде графа переходов, который вводится пользователем в интерактивном режиме.
+
+\section*{Постановка задачи}
+
+В данной работе необходимо спроектировать синтаксис языка описания программ для многоленточных и одноленточных машин Тьюринга. Полученную грамматику следует использовать для построения компилятора, транслирующего программу на формальном языке в инструкции для эмулятора машины Тьюринга.
+
+Разработка синтаксиса для нового формального языка представляет собой неординарную задачу. Следует учесть несколько факторов, которые влияют на качество проектируемого синтаксиса:
+\begin{itemize}
+	\item стандартизация --- синтаксис языка должен унаследовать стандартные конструкции из других языков программирования \cite[с.~48]{Pratt_Languages};
+	\item ясность, простота единообразие понятий языка \cite[с.~38]{Pratt_Languages};
+	\item обеспечение простоты чтения и написания программы \cite[c.~94]{Pratt_Languages}.
+\end{itemize}
+
+Новый синтаксис должен решить ряд проблем, связанных с описанием программы для машины Тьюринга:
+\begin{enumerate}
+	\item Команды могут не использовать запись на ленту нового значения, могут не перемещать ленту, не использовать переход в другое состояние.\label{item:task1}
+	\item Программа может содержать несколько состояний, для которых команды отличаются лишь несколькими значениями.\label{item:task2}
+	\item Программа может содержать команды, выполняющие одно и то же действие при различных наборах значений на лентах.\label{item:task3}
+\end{enumerate}
+
+Решение данных проблем позволит сократить описание программ для машины Тьюринга. 
+
+\section*{Синтаксис и семантика языка}
+
+Описание синтаксиса языка можно представить при помощи БНФ --- формы Бэкуса-Наура \cite[с.~17]{Serebryacov_Compillers}. Язык описания программ для машины Тьюринга имеет синтаксис, заданный в виде БНФ на рисунке (рисунок~\ref{fig:bnf_turing}).
+
+\begin{figure*}[p]
+	\centering
+	\inputminted[fontsize=\footnotesize]{bnf}{bnf/turing.bnf}
+	\caption{Синтаксис языка описания машины Тьюринга в форме Бэкуса --- Наура}\label{fig:bnf_turing}
+\end{figure*}
+
+Ключевые слова \texttt{turing}, \texttt{template}, \texttt{begin}, \texttt{end}, \texttt{state}, \texttt{dir}, \texttt{char}, \texttt{nul}, \texttt{left}, \texttt{right}, \texttt{and}, \texttt{or}, \texttt{write}, \texttt{move}, \texttt{goto} являются нечувствительными к регистру.
+
+В качестве идентификатора (\verb|<identifier>|) может выступать любая последовательность букв, цифр, и знаков «\_». Начало идентификатора не может быть цифрой или знаком «\$».
+
+Строка (\verb|<string>|) --- любая последовательность символов, заключенная в двойные кавычки.
+
+Символьная константа (\verb|<character-constant>|) --- символ или его шестнадцатерихное представление, заключенное в одинарные кавычки. Запись символа в шестнадцатеричном представлении имеет вид: \verb|'\xHH'|, где \texttt{HH} --- шестнадцатеричное число. Символ «\verb|\|» Задается с помощью конструкции \verb|'\\'|. Последовательности \verb|'\"'|, \verb|'\''| позволяют задавать символы кавычек внутри строк и символьных констант.
+
+Номер ленты (\verb|<tape-number>|) --- последовательность цифр, записанных после знака «\$».
+
+Программа для машины Тьюринга, записанная с помощью заданного синтаксиса представляет собой определение символьных множеств (\verb|<set-declaration>|) и описание правил перехода (\verb|<transition-rule>|), сгруппированных в состояния (\verb|<state-declaration>|). Описание правил перехода состоят из условия (\verb|<conditional-expression>|) и спаиска операторов (\verb|<statement>|).
+
+Если состояния имеют похожие правила перехода (проблема~2, см.~стр.~\pageref{item:task2}), тогда можно использовать шаблоны (\verb|<template-declaration>|), которые описивают правила перехода используя параметры из списка (\verb|<parameter-list>|). В таком случае определение состояния будет содержать символ «\verb|:|», идентификатор шабона и список фактических параметров (\verb|<initialiser-list>|).
+
+Проблема, когда при различных наборах значений на лентах автомат выполняет одинаковые действия (проблема~3, см.~стр.~\pageref{item:task3}), решается путем использования условных выражений (\verb|<confitional-expression>|). К примеру, если одно и то же правило перехода используется, когда на двух лентах записаны одинаковые значения из множества \texttt{alpha}, то условное выражение может иметь вид: \verb|(alpha, alpha) and $2 == $1|.
+
+В случае, если команда не меняет значение на ленте, не передвигает ленту или не переводит автомат в новое состояние (проблема 1, см.~стр.~\pageref{item:task1}), то соответствующий оператор (\verb|<statement>|) может быть опущен.
+
+\section*{Описание структуры разработанной системы}
+
+Разработанная система состоит из компилятора \verb|mtrc|, написанного на языке C++, и интерпретатора правил перехода, выполненного в виде статической библиотеки (\verb|statestep.lib|), написанной частично на языке C и на Ассемблере.
+
+Компилятор \verb|mtrc| --- это программа, которая считывает текст программы, записанный на языке описания машин Тьюринга, и транслирует (переводит) его в эквивалентную программу для интепретатора правил перехода (рисунок~\ref{fig:mtrc}). В процессе трансляции, компилятор может сообщать пользователю о налиции ошибок в исходной программе~\cite{Axo_Compillers}.
+
+%\end{multicols}
+
+\begin{figure*}[!h]
+	\centering
+	\begin{tikzpicture}[>=stealth]
+	\node[draw, inner sep = 12pt] (mtrc) {Компилятор MTRC};
+	\draw[->] (mtrc) -- ++(down:1cm) node[anchor=north] {Сообщения об ошибках};
+	\draw[<-] (mtrc) -- ++(left:3cm) node[anchor=east, text width=.25\linewidth] (source) {Исходная программа (файл increment.mtr)};
+	\draw[->] (mtrc) -- ++(right:3cm) node[anchor=west, text width=.20\linewidth] (object) {Целевая программа (файл increment.obj)};
+	\draw[dashed] (source) -- ++(down:2cm) node[draw, anchor=north, text width=.3\linewidth] {\inputminted[]{text}{../../examples/increment.mtr}};
+	\draw[dashed] (object) -- ++(down:2cm) node[draw, anchor=north,  text width=.4\linewidth] {\inputminted[]{text}{example/increment.txt}};
+	\end{tikzpicture}
+	\caption{Компилятор \texttt{mtrc}}\label{fig:mtrc}
+\end{figure*}
+
+
+
+
+%\begin{multicols}{2}
+
+В качестве примера для исходной программы использована машина Тьюринга, которая прибавляет 1 к числу в унарном коде. Математическая запись команд этой машины Тьюринга имеет вид:
+
+\begin{equation}\label{eqn:increment}
+\begin{array}{c}
+q_1 1 \rightarrow q_1 1 L; \\
+q_1 \lambda \rightarrow q_z 1 N.
+\end{array}
+\end{equation}
+
+Компилятор создает объектный файл, содержащий секции \texttt{.data} и \texttt{.text}. Секция \texttt{.data} содержит таблицу состояний, которая представляет собой массив указателей на процедуры из секции \texttt{.text}.
+
+В данном примере компилятор создал одну процедуру для состояния, которая содержится в секции \texttt{.text}. Семантика этой процедуры может быть описана с помощью ассемблерных команд и языка C (таблица~\ref{tab:disasm}).
+
+%\end{multicols}
+
+\begin{table}[h]
+	\caption{Дизассемблирование скомпилированного объектного модуля}\label{tab:disasm}
+	\centering
+	\begin{tabularx}{1\linewidth}{|X|X|X|}
+		\hline 
+		Машинный код & Ассемблер x86 & Язык C \\ 
+		\hline 
+		\begin{minipage}[t]{0.3\textwidth}
+			\inputminted[]{text}{example/disasm.txt}
+		\end{minipage} &
+		\begin{minipage}[t]{0.3\textwidth}
+			\inputminted[]{asm}{example/increment.asm}
+		\end{minipage} &
+		\begin{minipage}[t]{0.3\textwidth}
+			\inputminted[]{c}{example/increment.c}
+		\end{minipage} \\ 
+		\hline 
+	\end{tabularx} 
+\end{table}
+
+%\begin{multicols}{2}
+	
+Процедура, созданная компилятором, возвращает правило перехода, которое зависит от значения регистра  \texttt{AX}. В этот регистр интерпретатор должен записывать символы, содержащийся на лентах в текущем состоянии машины.
+
+В реализации эмулятора машины Тьюринга использованы эффективные алгоритмы, записанные на языке Ассемблера \cite{Magda_ASM_Pentium}, который существенно повышают скорость выполнения программы \cite{Magda_ASM_Windows}.
+
+Для использования программы, написанной на данном языке программирования необходимо написать простую программу на языке C, использующую эмулятор машины Тьюринга.
+
+\section*{Выводы}
+
+Разработанный язык описания программ для эмулятора машины Тьюринга не является полноценным языком программирования, однако он может быть использован в программных разработках вместе с языками C/C++, C\#, и другими.
+
+Применение разработанного языка позволит ускорить работу программного обеспечения, которое использует механизм машины Тьюринга.
+
+% Список литературы
+\bibliography{article}
+\bibliographystyle{ugost2003} 
+
+%\end{multicols}
+
+\begin{abstract}\itshape \noindent
+	\textbf{Воробьев Л.О., Компилируемый язык описания программ для эмулятора машины Тьюринга.}
+	В статье рассматривается язык программирования для описания алгоритмов на машине Тьюринга. Проанализированы существующие способы записи программы для машины Тьюринга.
+	Описывается синтаксис разработанного языка и обоснована эффективность его применения в разработке программного обеспечения.
+	\\ \\
+	\textbf{Ключевые слова:} синтаксический анализ, компиляция, эмулятор, машина Тьюринга, форма Бэкуса-Наура
+\end{abstract}
+
+\begin{abstract}\itshape \noindent
+	\textbf{Vorobuev L.O., The compiled programming language for emulator of Turing mashines.}
+	The article deals with the programming language to describe the algorithm on a Turing machine. Analyzed the existing methods of recording a program for a Turing machine.
+	It describes the syntax of the developed language and proved its efficiency in software development
+	\\ \\
+	\textbf{Keywords:} parsing, compilation, emulator, the Turing machine, Backus-Naur Form.
+\end{abstract}
+
+\end{document}

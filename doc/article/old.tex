@@ -1,0 +1,18 @@
+Правило перехода занимает 32 бита, и имеет структуру, изображенную на рисунке~\ref{fig:rule_info}
+
+\end{multicols}
+
+\begin{figure*}[h]
+	\centering
+	\begin{tikzpicture}
+	\draw (0,0) rectangle (16,.25);
+	\foreach \x in {0,0.5,...,15.5}
+	\draw (\x,0) -- +(up:.25);
+	
+	\foreach \x/\y in {15.75/0,15.25/1,0.25/31}
+	\node[anchor=south] at (\x,0.25) {\y};
+	\end{tikzpicture}
+	\caption{Структура правила перехода}\label{fig:rule_info}
+\end{figure*}
+
+\begin{multicols}{2}

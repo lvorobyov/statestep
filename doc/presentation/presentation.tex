@@ -1,0 +1,282 @@
+\documentclass[14pt,pdf,hyperref={unicode}]{beamer}
+
+\usepackage[X2, T2A]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage[english,russian]{babel}
+
+% Шрифт Times по умолчанию
+\usepackage{pscyr}
+\renewcommand{\rmdefault}{ftm}
+
+% Многостраничные таблицы
+\usepackage{tabularx,longtable}
+
+% Пакет для листингов прогармм
+\usepackage{minted}
+\setminted{fontsize=\small, breaklines, autogobble, baselinestretch=1.1, tabsize=4, outencoding=utf8}
+
+% Псевдокод
+\usepackage{algorithm2e}
+%\SetKwInput{KwData}{Исходные параметры}
+%\SetKwInput{KwResult}{Результат}
+%\SetKwInput{KwIn}{Входные данные}
+%\SetKwInput{KwOut}{Выходные данные}
+\SetKwIF{If}{ElseIf}{Else}{если}{то}{иначе если}{иначе}{конец условия}
+\SetKwFor{While}{пока}{выполнять}{конец цикла}
+%\SetKw{KwTo}{от}
+%\SetKw{KwRet}{возвратить}
+%\SetKw{Return}{возвратить}
+%\SetKwBlock{Begin}{начало блока}{конец блока}
+%\SetKwSwitch{Switch}{Case}{Other}{Проверить значение}{и выполнить}{вариант}{в противном случае}{конец варианта}{конец проверки значений}
+%\SetKwFor{For}{цикл}{выполнять}{конец цикла}
+%\SetKwFor{ForEach}{для каждого}{выполнять}{конец цикла}
+%\SetKwRepeat{Repeat}{повторять}{до тех пор, пока}
+%\SetAlgorithmName{Алгоритм}{алгоритм}{Список алгоритмов}
+
+% Библитека для рисования фигур
+\usepackage{tikz}
+
+% отключить клавиши навигации
+\setbeamertemplate{navigation symbols}{}
+
+% тема оформления
+\usetheme{Singapore}
+
+% цветовая схема
+\usecolortheme{dove}
+
+
+\title{Компилируемый язык описания программ для эмулятора машины Тьюринга}
+\subtitle{Разработка и использование компилятора}
+\author{Воробьев Л.О.} 
+\date{\today} 
+% \logo{\includegraphics[height=5mm]{images/logo.png}\vspace{-7pt}}
+
+\begin{document}
+
+% титульный слайд
+\begin{frame}
+\titlepage
+\end{frame} 
+
+\begin{frame}
+\frametitle{Цель работы} 
+\begin{itemize}
+	\item Создание специализированного компилируемого языка описания программ для многоленточных и одноленточных машин Тьюринга.
+	\item Разработка и реализация компилятора для созданного языка 
+	\item Написание эффективных алгоритмов интерпретации скомпилированных программ.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Актуальность}
+	\begin{itemize}
+		\item Объемность и сложность понимания программ для машины Тьюринга обуславливает высокую актуальность создания языка, упрощающего процесс написания и понимания таких программ.
+		\item Новый компилируемый язык позволит увеличить производительность программного обеспечения, которое требует использования машины Тьюринга.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Математическая запись программ для машины Тьюринга}
+	Программа для машины Тьюринга --- это конечный набор команд вида:
+	\begin{equation}\label{eq:command}
+	q_s a_i \rightarrow q_t a_j d
+	\end{equation}
+	для многоленточных машин Тьюринга:
+	\begin{equation}\label{eq:command_2}
+	q_s \left( a_{i1},\,a_{i2},\,\ldots a_{in} \right) \rightarrow q_t \left( a_{j1},\,a_{j2},\,\ldots a_{jn} \right) d
+	\end{equation}
+	где $q$ --- номера состояний; $a$ --- содержимое ячеек; $d$ --- направления движения лент.
+\end{frame}
+
+\begin{frame}{Требования к создаваемому языку}
+	\begin{block}{Проблема}
+		Повтор значений из-за отсутствия действия. Например:
+		$$ q_1 1 \rightarrow q_1 1 L ; \quad q_1 2 \rightarrow q_2 2 E ; \quad q_2 3 \rightarrow q_2 2 E $$
+	\end{block}
+		
+	\begin{block}{Решение}
+		Избавится от избыточности путем разделения команды на несколько операторов.
+	\end{block}
+\end{frame}
+
+\begin{frame}{Требования к создаваемому языку}
+	\begin{block}{Проблема}
+		Состояния с командами, выполняющими одинаковые действия. Например:
+		$$ q_1 1 \rightarrow q_2 1 R ; \quad q_2 1 \rightarrow q_3 1 E ; \quad q_3 1 \rightarrow q_1 1 E $$
+	\end{block}
+	
+	\begin{block}{Решение}
+		Избавится от избыточности путем использования шаблонных состояний.
+	\end{block}
+\end{frame}
+
+\begin{frame}{Требования к создаваемому языку}
+	\begin{block}{Проблема}
+		Одинаковые действия при разных условиях. Например:
+		$$
+		q_1 (1,1) \rightarrow q_2 (1,0) (R,E) ; \quad q_1 (2,1) \rightarrow q_2 (2,0) (R,E)
+		$$
+	\end{block}
+	
+	\begin{block}{Решение}
+		Избавится от избыточности путем использования условных выражений.
+	\end{block}
+\end{frame}
+
+\begin{frame}{Синтаксис разработанного языка}
+	\begin{columns}
+		\begin{column}{5cm}
+			Пример программы
+			\inputminted[tabsize=2]{text}{../../examples/increment.mtr}
+		\end{column}
+		
+		\begin{column}{7cm}
+			Форма БНФ (фрагмент)
+			\inputminted[fontsize=\scriptsize,tabsize=2,firstline=50]{bnf}{../article/bnf/turing.bnf}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Шаблоны состояний}
+	\begin{block}{Форма БНФ}
+		\inputminted[fontsize=\scriptsize,tabsize=2,firstline=8,lastline=10]{bnf}{../article/bnf/turing.bnf}
+	\end{block}
+	\inputminted[tabsize=2]{text}{syntax/template.txt}
+\end{frame}
+
+\begin{frame}{Условные выражения}
+	\begin{itemize}
+		\item Простое выражение. Например: \texttt{'1'}; \texttt{'\textbackslash x0F'}; \texttt{14}; \texttt{nul}.
+		\item Использование логических операторов \texttt{and}, \texttt{or}. Например: \texttt{'1' or nul}.
+		\item Перечисление в круглых скобках. Например, \texttt{(«abc», '*')} соответствует \texttt{('a','*')or('c','*')or('b','*')}.
+		\item Операторы сравнения \texttt{==,!=,<,>,<=,>=}. \texttt{(«abc», «abc») and \$2 == \$1}.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Работа компилятора}
+	\begin{center}
+		\includegraphics[scale=.45]{fig/compiler}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Использование компилятора mtrc}
+	\begin{center}
+		\begin{tikzpicture}[source/.style={draw, inner sep = 10pt},
+		pre/.style={<-,shorten <=1pt,>=stealth,semithick},
+		post/.style={->,shorten >=1pt,>=stealth,semithick}]
+		\node[source] (a) at (0,0) {main.c};
+		\node[source] (b) at (4,0) {increment.mtr};
+		\node (c) at (0,-1.5) {cc}
+			edge[pre] (a);
+		\node (d) at (4,-1.5) {mtrc}
+			edge[pre] (b);
+		\node[source] (e) at (0,-3) {main.o}
+			edge[pre] (c);
+		\node[source] (f) at (4,-3) {increment.obj}
+			edge[pre] (d);
+		\node[source] (g) at (5,-4.5) {statestep.lib};
+		\node (h) at (2, -4.5) {link}
+			edge[pre] (e)
+			edge[pre] (f)
+			edge[pre] (g);
+		\node[source] at (-1,-4.5) {program.exe}
+			edge[pre] (h);
+		\end{tikzpicture}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Устройство выходной программы компилятора mtrc}
+\framesubtitle{increment.obj}
+\begin{columns}
+	\begin{column}[t]{3.7cm}
+		Машинный код
+		\inputminted[fontsize=\scriptsize]{text}{example/disasm.txt}
+	\end{column}
+	
+	\begin{column}[t]{4.3cm}
+		Ассемблер x86
+		\inputminted[fontsize=\scriptsize]{asm}{example/increment.asm}
+	\end{column}
+	
+	\begin{column}[t]{4cm}
+		Язык C
+		\inputminted[fontsize=\scriptsize]{c}{example/increment.c}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Структура правила перехода}
+	Выходная программа проверяет условия и возвращает 32-разрядные правила перехода:
+	\begin{center}
+		\begin{tikzpicture}[shorten >=1pt,>=stealth,
+			flag name/.style={anchor=north west,inner sep=0pt}]
+		\draw (0,0) rectangle (10,.75);
+		\foreach \x in {2.5,2.8125,3.125,3.4375,3.75,5,7.5}
+			\draw (\x,0) -- +(up:.75);
+		\foreach \x/\t in {0/31,2.5/23,3.75/19,5/15,7.5/7,10/0}
+			\node[anchor=south] at (\x,.75) {\t};
+		\foreach \x/\t in {4.375/dir,6.25/a\_sec,8.75/a\_fst}
+			\node[anchor=south] at (\x,0) {\t};
+		\draw[] (3.59375,.25) -- (3.75,-.25) node[flag name] {a\_fst\_const};
+		\draw[] (3.28125,.25) -- (3.75,-1) node[flag name] {a\_sec\_const};
+		\draw[] (2.96875,.25) -- (3.75,-1.75) node[flag name] {f\_repeat};
+		\draw[] (2.65625,.25) -- (3.75,-2.5) node[flag name] {f\_norule};
+		\draw[thick,->] (1.25, -.15) -> +(down:.5);
+		\draw (0,-1.5) rectangle +(2.5, .75);
+		\draw (.625,-1.5) -- +(up:.75);
+		\draw (0,-3) rectangle +(2.5, .75);
+		\node[anchor=south] at (1.5625,-1.5) {q\_num};
+		\node[anchor=south] at (1.25,-3) {tape\_num};
+		\end{tikzpicture}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Алгоритм интерпретации полученных программ}
+\framesubtitle{Библиотека statestep.lib}
+\begin{center}
+\scalebox{.8}{ 
+	\begin{algorithm}[H]
+		\SetAlgoLined
+		\DontPrintSemicolon
+		$q$ := $q_0$\;
+		\While{$q$ != $q_z$}{
+			читать $a_1$ и $a_2$ с лент\;
+			получить правило перехода\;
+			\uIf{установлен флаг f\_repeat}{
+				запустить циклическое выполнение правил перехода\;
+			}
+			\uElseIf{установлен флаг f\_norule}{
+				прервать работу с ошибкой\;
+			}
+			\Else{
+				выполнить правило перехода\;
+			}
+		}
+	\end{algorithm}
+}
+\end{center}
+\end{frame}
+
+\begin{frame}{Перспективы разработки}
+	Планируется добавить следующие возможности:
+	\begin{itemize}
+		\item использование препроцессора;
+		\item генерация машинного кода для разных платформ;
+		\item поддержка архитектуры x64;
+		\item оптимизация алгоритмов компилятором.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Заключение}
+	\begin{itemize}
+		\item Разработанный язык позволяет избавится от избыточности представления программ для машины Тьюринга.
+		\item Применение разработанного языка позволит повысить быстродействие программного обеспечения, которое использует механизм машины Тьюринга: синтаксические анализаторы, системы шифрования, и т.д.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[plain]
+	\begin{center}
+		Спасибо за внимание!
+	\end{center}
+\end{frame}
+
+\end{document}

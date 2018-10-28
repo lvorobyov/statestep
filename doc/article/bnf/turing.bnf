@@ -1,0 +1,58 @@
+<translation-unit> ::= {<external-declaration>}*
+<external-declaration> ::= <turing-definition>
+<turing-definition> ::= turing <identifier> { {<set-declaration>}* {<turing-declaration>}+ }
+<set-declaration> ::= <identifier> = <set-constant>
+<set-constant> ::= <string>
+<turing-declaration> ::= <state-declaration> 
+					   | <template-declaration>
+<template-declaration> ::= template <identifier> ( <parameter-list> ) {<transition-rule>}+
+<state-declaration> ::= {begin}? state <identifier> {<transition-rule>}+
+					  | {begin}? state <identifier> : <identifier> ( <initializer-list> )	
+<parameter-list> ::= <parameter-declaration>
+                   | <parameter-list> , <parameter-declaration>
+<parameter-declaration> ::= <type-specifier> <identifier>
+<type-specifier> ::= dir | char | state 
+<initializer-list> ::= <initializer>
+                     | <initializer-list> , <initializer>
+<initializer> ::= <character-expression>
+                | <direction-expression>
+				| <state-expression>
+<character-expression> ::= <character-constant>
+						 | <number>
+						 | <identifier>
+						 | <tape-number>
+						 | nul
+<set-expression> ::= <set-constant>
+				   | <identifier>
+<direction-expression> ::= <direction-constant>
+						 | <identifier>
+<direction-constant> ::= left | right
+<state-expression> ::= <identifier> | end
+<conditional-expression> ::= <or-expression>
+<or-expression> ::= <and-expression>
+                  | <or-expression> or <and-expression>
+<and-expression> ::= <equality-expression>
+                   | <and-expression> and <equality-expression>
+<equality-expression> ::= <relational-expression>
+                        | <tape-number> == <character-expression>
+                        | <tape-number> != <character-expression>
+<relational-expression> ::= <primary-expression>
+                          | <tape-number> < <character-expression>
+                          | <tape-number> > <character-expression>
+                          | <tape-number> <= <character-expression>
+                          | <tape-number> >= <character-expression>
+<primary-expression> ::= <tape-expression> 
+					   | ( <tape-list> )
+<tape-list> ::= <tape-expression>
+			  | <tape-list> , <tape-expression>
+<tape-expression> ::= <character-expression>
+					| <set-expression>
+<transition-rule> ::= <conditional-expression> : {<statement>}*
+<statement> ::= <write-statement>
+			  | <move-statement>
+			  | <goto-statement>
+<write-statement> ::= write <character-expression> ;
+					| <tape-number> . write <character-expression> ;
+<move-statement> ::= move <direction-expression> ;
+				   | <tape-number> . move <direction-expression> ;
+<goto-statement> ::= goto <state-expression> ;
