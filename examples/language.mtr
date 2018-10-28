@@ -1,0 +1,72 @@
+turing language
+{	
+	alpha = "abc"
+
+	begin state q1
+		(alpha, nul):
+			$2.write '*';
+			$1.move right;
+			$2.move right;
+			goto q2;
+		(nul, nul):
+			$1.move left;
+			$2.move left;
+			goto q5;
+	template q_counter (state next)
+		(alpha, nul):
+			$1.move right;
+			goto next;
+		(nul, nul):
+			$1.write '-';
+			goto end;
+	state q2 : q_counter (q3)
+	state q3 : q_counter (q4)
+	state q4 : q_counter (q1)
+	state q5
+		(alpha, '*'):
+			$2.write $1;
+			$1.move right;
+			$2.move right;
+		(alpha, nul):
+			$2.move right;
+			goto q6;
+		(nul, nul):
+			$1.write '+';
+			goto end;
+	state q6
+		(alpha, alpha) and $2 == $1:
+			$1.move left;
+			$2.move right;
+		(alpha, alpha) and $2 != $1:
+			$1.write '-';
+			goto end;
+		(alpha, nul):
+			$2.move left;
+			goto q7;
+	state q7
+		(alpha, alpha) and $2 == $1:
+			$1.move left;
+			$2.move left;
+		(alpha, alpha) and $2 != $1:
+			$1.write '-';
+			goto end;
+		(nul, nul):
+			$2.move right;
+			goto q8;
+	state q8
+		(alpha, alpha)
+			$2.move right;
+		(alpha, nul)
+			$2.move left;
+			goto q9;
+	state q9
+		(alpha, alpha) and $2 == $1:
+			$1.move left;
+			$2.move left;
+		(alpha, alpha) and $2 != $1:
+			$1.write '-';
+			goto end;
+		(nul, nul):
+			$1.write '+';
+			goto end;
+}

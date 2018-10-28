@@ -1,0 +1,48 @@
+turing select
+{	
+	alpha = "1*"
+	// Движение вправо до конца
+	begin state q1
+		alpha:
+			move right;
+		empty:
+			move left;
+			goto q2;
+	state q2
+		'1':
+			write nul;
+			move left;
+			goto q3;
+		'*':
+			write nul;
+			move left;
+			goto q5;
+		empty:
+			move left;
+	state q3
+		alpha:
+			move left;
+		empty:
+			move right;
+			goto q4;
+	state q4
+		'1':
+			write nul;
+			move right;
+		empty:
+			move left;
+			goto q2;
+		'*':
+			write nul;
+			move right;
+			goto q1;
+	state q5
+		'1':
+			move left;
+		'*':
+			move right;
+			goto q4;
+		empty:
+			move right;
+			goto end;
+}

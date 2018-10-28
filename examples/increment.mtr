@@ -1,0 +1,9 @@
+turing increment
+{	
+	begin state q0
+		'1':
+			move left;
+		nul:
+			write '1';
+			goto end;
+}
