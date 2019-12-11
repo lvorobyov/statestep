@@ -1,4 +1,4 @@
-     cmp  al, '1'
+     cmp  al, 31h
      jne  .e1
      mov  eax, 00320000h
      ret

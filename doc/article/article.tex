@@ -29,10 +29,10 @@
 	\vskip 2em%
 	\begin{center}%
 		\ifx\@subject\@empty \else
-		{\Large \@subject \par}
+		{\large \@subject \par}
 		\vskip 1.5em
 		\fi
-		{\bfseries\huge \@title \par}%
+		{\bfseries\Large \@title \par}%
 		\vskip 1.5em%
 		{\normalsize
 			\lineskip .5em%
@@ -63,12 +63,12 @@ left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm, headsep=0.7cm, footskip=1cm
 \usepackage[utf8x]{inputenc}
 \usepackage[english,russian]{babel}
 % Многостраничные таблицы
-\usepackage{tabularx,longtable}
+\usepackage{longtable,tabu}
 \ifpdf\usepackage{epstopdf}\fi
 
 % Шрифт Times по умолчанию
-\usepackage{pscyr}
-\renewcommand{\rmdefault}{ftm}
+\usepackage{tempora}
+%\renewcommand{\rmdefault}{ftm}
 
 % Красная строка
 \usepackage{indentfirst}
@@ -107,7 +107,7 @@ left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm, headsep=0.7cm, footskip=1cm
 
 %opening
 \title{Компилируемый язык описания программ для эмулятора машины Тьюринга}
-\author{Л.О. Воробьев}
+\author{Л.О. Воробьёв}
 \publishers{Донецкий национальный технический университет}
 \udk{004.4'422}
 \email{lev4411@gmail.com}
@@ -135,7 +135,7 @@ left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm, headsep=0.7cm, footskip=1cm
 \widowpenalty=10000
 
 \begin{abstract}\itshape \noindent
-\textbf{Воробьев Л.О., Компилируемый язык описания программ для эмулятора машины Тьюринга.}
+\textbf{Воробьёв Л.О., Компилируемый язык описания программ для эмулятора машины Тьюринга.}
 В статье рассматривается язык программирования для описания алгоритмов на машине Тьюринга. Проанализированы существующие способы записи программы для машины Тьюринга.
 Описывается синтаксис разработанного языка описания программ и обоснована эффективность его применения в разработке программного обеспечения.
 \\ \\
@@ -144,7 +144,7 @@ left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm, headsep=0.7cm, footskip=1cm
 
 \vskip 1em%
 
-%\begin{multicols}{2}
+\begin{multicols}{2}
 	
 \section*{Введение}
 
@@ -211,7 +211,7 @@ q_s \left( a_{i1},\,a_{i2},\,\ldots a_{in} \right) \rightarrow q_t \left( a_{j1}
 
 \section*{Синтаксис и семантика языка}
 
-Описание синтаксиса языка можно представить при помощи БНФ --- формы Бэкуса-Наура \cite[с.~17]{Serebryacov_Compillers}. Язык описания программ для машины Тьюринга имеет синтаксис, заданный в виде БНФ на рисунке (рисунок~\ref{fig:bnf_turing}).
+Описание синтаксиса языка можно представить при помощи БНФ --- формы Бэкуса-Наура \cite[с.~17]{Serebryacov_Compillers}. Язык описания программ для машины Тьюринга имеет синтаксис, заданный в виде БНФ на рис.~\ref{fig:bnf_turing}.
 
 \begin{figure*}[p]
 	\centering
@@ -225,7 +225,7 @@ q_s \left( a_{i1},\,a_{i2},\,\ldots a_{in} \right) \rightarrow q_t \left( a_{j1}
 
 Строка (\verb|<string>|) --- любая последовательность символов, заключенная в двойные кавычки.
 
-Символьная константа (\verb|<character-constant>|) --- символ или его шестнадцатерихное представление, заключенное в одинарные кавычки. Запись символа в шестнадцатеричном представлении имеет вид: \verb|'\xHH'|, где \texttt{HH} --- шестнадцатеричное число. Символ «\verb|\|» Задается с помощью конструкции \verb|'\\'|. Последовательности \verb|'\"'|, \verb|'\''| позволяют задавать символы кавычек внутри строк и символьных констант.
+Символьная константа (\verb|<character-constant>|) --- символ или его шестнадцатеричное представление, заключенное в одинарные кавычки. Запись символа в шестнадцатеричном представлении имеет вид: \verb|'\xHH'|, где \texttt{HH} --- шестнадцатеричное число. Символ «\verb|\|» Задается с помощью конструкции \verb|'\\'|. Последовательности \verb|'\"'|, \verb|'\''| позволяют задавать символы кавычек внутри строк и символьных констант.
 
 Номер ленты (\verb|<tape-number>|) --- последовательность цифр, записанных после знака «\$».
 
@@ -241,9 +241,9 @@ q_s \left( a_{i1},\,a_{i2},\,\ldots a_{in} \right) \rightarrow q_t \left( a_{j1}
 
 Разработанная система состоит из компилятора \verb|mtrc|, написанного на языке C++, и интерпретатора правил перехода, выполненного в виде статической библиотеки (\verb|statestep.lib|), написанной частично на языке C и на Ассемблере.
 
-Компилятор \verb|mtrc| --- это программа, которая считывает текст программы, записанный на языке описания машин Тьюринга, и транслирует (переводит) его в эквивалентную программу для интепретатора правил перехода (рисунок~\ref{fig:mtrc}). В процессе трансляции, компилятор может сообщать пользователю о налиции ошибок в исходной программе~\cite{Axo_Compillers}.
+Компилятор \verb|mtrc| --- это программа, которая считывает текст программы, записанный на языке описания машин Тьюринга, и транслирует (переводит) его в эквивалентную программу для интерпретатора правил перехода (рис.~\ref{fig:mtrc}). В процессе трансляции, компилятор может сообщать пользователю о налиции ошибок в исходной программе~\cite{Axo_Compillers}.
 
-%\end{multicols}
+\end{multicols}
 
 \begin{figure*}[!h]
 	\centering
@@ -258,10 +258,7 @@ q_s \left( a_{i1},\,a_{i2},\,\ldots a_{in} \right) \rightarrow q_t \left( a_{j1}
 	\caption{Компилятор \texttt{mtrc}}\label{fig:mtrc}
 \end{figure*}
 
-
-
-
-%\begin{multicols}{2}
+\begin{multicols}{2}
 
 В качестве примера для исходной программы использована машина Тьюринга, которая прибавляет 1 к числу в унарном коде. Математическая запись команд этой машины Тьюринга имеет вид:
 
@@ -274,31 +271,28 @@ q_1 \lambda \rightarrow q_z 1 N.
 
 Компилятор создает объектный файл, содержащий секции \texttt{.data} и \texttt{.text}. Секция \texttt{.data} содержит таблицу состояний, которая представляет собой массив указателей на процедуры из секции \texttt{.text}.
 
-В данном примере компилятор создал одну процедуру для состояния, которая содержится в секции \texttt{.text}. Семантика этой процедуры может быть описана с помощью ассемблерных команд и языка C (таблица~\ref{tab:disasm}).
+В данном примере компилятор создал одну процедуру для состояния, которая содержится в секции \texttt{.text}. Семантика этой процедуры может быть описана с помощью ассемблерных команд и языка C (табл.~\ref{tab:disasm}).
 
-%\end{multicols}
+\end{multicols}
 
-\begin{table}[h]
+\begin{table}[H]
 	\caption{Дизассемблирование скомпилированного объектного модуля}\label{tab:disasm}
 	\centering
-	\begin{tabularx}{1\linewidth}{|X|X|X|}
+	\begin{tabu} to 1\linewidth {|X|X|X|}
 		\hline 
 		Машинный код & Ассемблер x86 & Язык C \\ 
-		\hline 
-		\begin{minipage}[t]{0.3\textwidth}
+		\hline
 			\inputminted[]{text}{example/disasm.txt}
-		\end{minipage} &
-		\begin{minipage}[t]{0.3\textwidth}
+			&
 			\inputminted[]{asm}{example/increment.asm}
-		\end{minipage} &
-		\begin{minipage}[t]{0.3\textwidth}
+			&
 			\inputminted[]{c}{example/increment.c}
-		\end{minipage} \\ 
+			\\
 		\hline 
-	\end{tabularx} 
+	\end{tabu} 
 \end{table}
 
-%\begin{multicols}{2}
+\begin{multicols}{2}
 	
 Процедура, созданная компилятором, возвращает правило перехода, которое зависит от значения регистра  \texttt{AX}. В этот регистр интерпретатор должен записывать символы, содержащийся на лентах в текущем состоянии машины.
 
@@ -316,10 +310,10 @@ q_1 \lambda \rightarrow q_z 1 N.
 \bibliography{article}
 \bibliographystyle{ugost2003} 
 
-%\end{multicols}
+\end{multicols}
 
 \begin{abstract}\itshape \noindent
-	\textbf{Воробьев Л.О., Компилируемый язык описания программ для эмулятора машины Тьюринга.}
+	\textbf{Воробьёв Л.О., Компилируемый язык описания программ для эмулятора машины Тьюринга.}
 	В статье рассматривается язык программирования для описания алгоритмов на машине Тьюринга. Проанализированы существующие способы записи программы для машины Тьюринга.
 	Описывается синтаксис разработанного языка и обоснована эффективность его применения в разработке программного обеспечения.
 	\\ \\
@@ -327,7 +321,7 @@ q_1 \lambda \rightarrow q_z 1 N.
 \end{abstract}
 
 \begin{abstract}\itshape \noindent
-	\textbf{Vorobuev L.O., The compiled programming language for emulator of Turing mashines.}
+	\textbf{Vorobyov L.O., The compiled programming language for emulator of Turing mashines.}
 	The article deals with the programming language to describe the algorithm on a Turing machine. Analyzed the existing methods of recording a program for a Turing machine.
 	It describes the syntax of the developed language and proved its efficiency in software development
 	\\ \\
